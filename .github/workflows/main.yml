@@ -35,6 +35,8 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: 1
       CARGO_INCREMENTAL: 0
       CARGO_PUBLIC_NETWORK_TESTS: 1
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
     strategy:
       matrix:
         include:
@@ -84,6 +86,12 @@ jobs:
     - name: Enable sparse
       run: echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV
       if: "!contains(matrix.rust, 'stable')"
+
+    - name: Sccache Setup
+      # Just for test, come back to upstream after released
+      uses: Xuanwo/sccache-action@c94e27bef21ab3fb4a5152c8a878c53262b4abb0
+      with:
+        version: "v0.4.0-pre.6"
 
     # Deny warnings on CI to avoid warnings getting into the codebase.
     - run: cargo test --features 'deny-warnings'
